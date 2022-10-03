@@ -51,9 +51,8 @@ public class WindowManager {
 		if (window == NULL)
 			throw new RuntimeException("Failed to create the GLFW window");
 		
-		// TODO
-		glfwSetKeyCallback(window, (window, key, scancode, action, mods) -> {});
-
+		Input.setWindowCallbacks(window);
+		
 		GLFWVidMode vidmode = glfwGetVideoMode(glfwGetPrimaryMonitor());
 		glfwSetWindowPos(
 			window,
@@ -71,12 +70,13 @@ public class WindowManager {
 		
 		glEnable(GL_DEPTH_TEST);
 		glEnable(GL_STENCIL_TEST);
-		glEnable(GL_CULL_FACE);
-		glCullFace(GL_BACK);
+//		 glEnable(GL_CULL_FACE);
+//		 glCullFace(GL_BACK);
 	}
 	
 	public void update() {
 		glfwPollEvents();
+		Input.poll();
 	}
 	
 	public void cleanUp() {
@@ -98,9 +98,21 @@ public class WindowManager {
 		return projectionMatrix;
 	}
 	
+	public static void setTitle(String title) {
+		glfwSetWindowTitle(window, TITLE + " " + title);
+	}
+	
 	public static long getWindow() {
 		if (window == NULL)
 			throw new IllegalStateException("Window not created.");
 		return window;
+	}
+
+	public static int getWIDTH() {
+		return WIDTH;
+	}
+
+	public static int getHEIGHT() {
+		return HEIGHT;
 	}
 }

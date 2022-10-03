@@ -7,9 +7,14 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
+import org.joml.Vector4f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
+
+import naut.entities.Entity;
+import naut.materials.Material;
 
 public abstract class Shader {
 	
@@ -32,6 +37,8 @@ public abstract class Shader {
 		GL20.glValidateProgram(programID);
 	}
 	
+	public abstract void renderEntity(Entity e);
+	
 	public void createUniform(String name) {
 		int location = GL20.glGetUniformLocation(programID, name);
 		if (location < 0)
@@ -39,8 +46,44 @@ public abstract class Shader {
 		uniforms.put(name, location);
 	}
 	
+	public void createMaterialUniform(String name) {
+		createUniform(name + ".ambient");
+		createUniform(name + ".diffuse");
+		createUniform(name + ".specular");
+		createUniform(name + ".hasTexture");
+		createUniform(name + ".reflectance");
+	}
+	
 	public void setUniform(String name, int value) {
 		GL20.glUniform1i(uniforms.get(name), value);
+	}
+	
+	public void setUniform(String name, float value) {
+		GL20.glUniform1f(uniforms.get(name), value);
+	}
+	
+	public void setUniform(String name, boolean value) {
+		GL20.glUniform1f(uniforms.get(name), value ? 1 : 0);
+	}
+	
+	public void setUniform(String name, Vector3f value) {
+		try (var stack = MemoryStack.stackPush()) {
+			GL20.glUniform4fv(uniforms.get(name), value.get(stack.mallocFloat(3)));
+		}
+	}
+	
+	public void setUniform(String name, Vector4f value) {
+		try (var stack = MemoryStack.stackPush()) {
+			GL20.glUniform4fv(uniforms.get(name), value.get(stack.mallocFloat(4)));
+		}
+	}
+	
+	public void setUniform(String name, Material material) {
+		setUniform(name + ".ambient", material.getAmbientColor());
+		setUniform(name + ".diffuse", material.getDiffuseColor());
+		setUniform(name + ".specular", material.getSpecularColor());
+		setUniform(name + ".hasTexture", material.hasTexture() ? 1 : 0);
+		setUniform(name + ".reflectance", material.getReflectance());
 	}
 	
 	public void setUniform(String name, Matrix4f value) {
@@ -49,7 +92,7 @@ public abstract class Shader {
 		}
 	}
 	
-	public void start(){
+	protected void start(){
 		GL20.glUseProgram(programID);
 	}
 	

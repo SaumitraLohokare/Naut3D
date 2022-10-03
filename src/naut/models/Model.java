@@ -26,7 +26,7 @@ public class Model {
 	private List<Integer> vaos, vbos;
 	private int vertexCount;
 	
-	public Model(float[] vertices, int[] indices) {
+	public Model(float[] vertices, float[] normals, int[] indices, float[] texCoords) {
 		vaos = new ArrayList<>();
 		vbos = new ArrayList<>();
 		vertexCount = indices.length;
@@ -34,21 +34,35 @@ public class Model {
 		var vao = glGenVertexArrays();
 		glBindVertexArray(vao);
 		
-		var indicesVBO = glGenBuffers();
-		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, indicesVBO);
-		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
-		
-		var verticesVbo = glGenBuffers();
-		glBindBuffer(GL_ARRAY_BUFFER, verticesVbo);
-		glBufferData(GL_ARRAY_BUFFER, vertices, GL_STATIC_DRAW);
-		glVertexAttribPointer(0, 3, GL_FLOAT, false, 0, 0);
-		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		storeIndices(indices);
+		storeAttribute(0, 3, vertices);
+		if (texCoords != null) {
+			storeAttribute(1, 2, texCoords);
+		}
+		storeAttribute(2, 3, normals);
 		
 		glBindVertexArray(0);
-		
-		vbos.add(verticesVbo);
-		vbos.add(indicesVBO);
 		vaos.add(vao);
+	}
+	
+	private void storeIndices(int[] indices) {
+		var vbo = glGenBuffers();
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ELEMENT_ARRAY_BUFFER, indices, GL_STATIC_DRAW);
+	}
+	
+	private void storeAttribute(int attributeNo, int vertexCount, float[] attribute) {
+		var vbo = glGenBuffers();
+		glBindBuffer(GL_ARRAY_BUFFER, vbo);
+		glBufferData(GL_ARRAY_BUFFER, attribute, GL_STATIC_DRAW);
+		glVertexAttribPointer(attributeNo, vertexCount, GL_FLOAT, false, 0, 0);
+		glBindBuffer(GL_ARRAY_BUFFER, 0);
+		
+		vbos.add(vbo);
+	}
+	
+	public void bindVAO() {
+		glBindVertexArray(vaos.get(0));
 	}
 	
 	public void cleanUp() {
@@ -59,15 +73,9 @@ public class Model {
 			glDeleteBuffers(vbo);
 		}
 	}
-	
-	public void render() {
-		glBindVertexArray(vaos.get(0));
-		glEnableVertexAttribArray(0);
-		glEnableVertexAttribArray(1);
-		glDrawElements(GL_TRIANGLES, vertexCount, GL_UNSIGNED_INT, 0);
-		glDisableVertexAttribArray(0);
-		glDisableVertexAttribArray(1);
-		glBindVertexArray(0);
+
+	public int getVertexCount() {
+		return vertexCount;
 	}
 	
 }

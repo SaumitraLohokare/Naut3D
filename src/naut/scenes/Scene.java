@@ -9,9 +9,10 @@ import naut.core.Camera;
 
 public abstract class Scene {
 	
-	private Camera camera;
+	protected Camera camera;
 	public abstract void update(double dt);
 	public abstract void render();
+	public abstract void cleanUp();
 	public Scene(Camera camera) {
 		this.camera = camera;
 	}
@@ -42,6 +43,12 @@ public abstract class Scene {
 	
 	public Matrix4f getCameraViewMatrix() {
 		return camera.getViewMatrix();
+	}
+	
+	public void cleanUpScenes() {
+		scenes.forEach((k, scene) -> {
+			scene.cleanUp();
+		});
 	}
 	
 }

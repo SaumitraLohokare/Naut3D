@@ -3,19 +3,29 @@ package naut.entities;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import naut.materials.Material;
 import naut.models.Model;
+import naut.textures.Texture;
 
 public class Entity {
 	
 	private Vector3f position, rotation;
 	private float scale;
 	private Model model;
+	private Material material;
 	
-	public Entity (Vector3f position, Vector3f rotation, float scale, Model model) {
+	public Entity (Vector3f position, Vector3f rotation, float scale) {
 		this.position = position;
 		this.rotation = rotation;
 		this.scale = scale;
+	}
+	
+	public void setModel(Model model) {
 		this.model = model;
+	}
+	
+	public void setMaterial(Material material) {
+		this.material = material;
 	}
 
 	public Vector3f getPosition() {
@@ -43,5 +53,13 @@ public class Entity {
 
 	public void cleanUp() {
 		model.cleanUp();
+	}
+	
+	public Texture getTexture() {
+		return material.getTexture();
+	}
+
+	public Material getMaterial() {
+		return material;
 	}
 }

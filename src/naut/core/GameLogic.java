@@ -17,8 +17,12 @@ public class GameLogic {
 		Scene.changeScene("test");
 	}
 	
-	public void update() {
-		
+	public void update(double delta) {
+		Scene.currentScene().update(delta);
 	}
 
+	public void cleanUp() {
+		
+	}
+	
 }

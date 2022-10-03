@@ -3,6 +3,7 @@ package main;
 import org.lwjgl.Version;
 
 import naut.core.GameLogic;
+import naut.core.Input;
 import naut.core.RenderManager;
 import naut.core.WindowManager;
 
@@ -28,8 +29,24 @@ public class Launcher {
 	}
 	
 	private void run() {
+		long last = System.currentTimeMillis();
+		int frames = 0;
+		long lastFrameTime = System.nanoTime();
+		long currentFrameTime = 0;
+		
 		while (!window.shouldClose()) {
-			game.update();
+			frames += 1;
+			if (System.currentTimeMillis() - last >= 1000) {
+				last = System.currentTimeMillis();
+				WindowManager.setTitle(String.valueOf(frames));
+				frames = 0;
+			}
+			
+			currentFrameTime = System.nanoTime();
+			var delta = (currentFrameTime - lastFrameTime) / 1000000000d;
+			lastFrameTime = currentFrameTime;
+			
+			game.update(delta);
 			renderer.render();
 			window.update();
 		}
