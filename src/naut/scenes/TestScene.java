@@ -9,6 +9,7 @@ import org.lwjgl.glfw.GLFW;
 
 import naut.core.Camera;
 import naut.core.Input;
+import naut.core.Loader;
 import naut.entities.Entity;
 import naut.materials.Material;
 import naut.models.Model;
@@ -20,44 +21,32 @@ public class TestScene extends Scene {
 
 	List<Entity> entities;
 	Model m;
-	TexturedShader shader;
+	StaticShader shader;
 
 	public TestScene() {
 		super(new Camera(new Vector3f(0, 0, 5f), new Vector3f()));
-
-		var vertices = new float[] { -0.5f, 0.25f, 0.5f, -0.5f, -0.25f, 0.5f, 0.5f, 0.25f, 0.5f, 0.5f, -0.25f, 0.5f, -0.5f,
-				0.25f, -0.5f, -0.5f, -0.25f, -0.5f, 0.5f, 0.25f, -0.5f, 0.5f, -0.25f, -0.5f, };
-		var indices = new int[] { 0, 1, 2, 2, 1, 3,
-
-				4, 5, 6, 6, 5, 7,
-
-				4, 5, 0, 0, 5, 1,
-
-				2, 3, 6, 6, 3, 7,
-
-				0, 2, 4, 4, 2, 6,
-
-				1, 3, 5, 5, 3, 7, };
-
-		var texCoords = new float[] { 0, 0, 0, 0.5f, 0.5f, 0, 0.5f, 0.5f, 0.5f, 0.5f, 0.5f, 1f, 1f, 0.5f, 1f, 1f, };
-		var normals = new float[indices.length * 3];
 		
-		m = new Model(vertices, normals, indices, texCoords);
-		var texture = Texture.loadTexture("src/textures/test.png");
+		m = Loader.loadOBJModel("src/models/f16.obj");
+		var texture = Texture.loadTexture("src/textures/F16s.bmp");
 		var material = new Material(texture, 1);
 		
 		entities = new ArrayList<>();
-		for (int i = 0; i < 10; i++) {
-			for (int j = 0; j < 10; j++) {
-				var e = new Entity(new Vector3f(i, 0, -j), new Vector3f(), 1);
-				e.setModel(m);
-				// TODO cache textures
-				e.setMaterial(material);
-				entities.add(e);
-			}
-		}
+		var e = new Entity(new Vector3f(1, 0, -1), new Vector3f(), 1);
+		e.setModel(m);
+		// TODO cache textures
+		e.setMaterial(material);
+		entities.add(e);
+//		for (int i = 0; i < 10; i++) {
+//			for (int j = 0; j < 10; j++) {
+//				var e = new Entity(new Vector3f(i, 0, -j), new Vector3f(), 1);
+//				e.setModel(m);
+//				// TODO cache textures
+//				e.setMaterial(material);
+//				entities.add(e);
+//			}
+//		}
 		
-		shader = new TexturedShader();
+		shader = new StaticShader();
 	}
 
 	@Override

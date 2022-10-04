@@ -31,9 +31,5 @@ void main(void) {
 	setupColors(material);
 	
 	// ambientC = material.ambient * material.specular * material.diffuse;
-	if (ambientC.x == 0 || ambientC.y == 0 || ambientC.z == 0) {
-		out_color = vec4(color, 1.0);
-	} else {
-		out_color = ambientC * vec4(ambientLight, 1.0);
-	}
+	out_color = ambientC * vec4(ambientLight, 1.0);
 }

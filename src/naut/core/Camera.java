@@ -6,7 +6,7 @@ import org.joml.Vector3f;
 public class Camera {
 
 	private Vector3f position, rotation;
-	private static final float MOVE_SPEED = 1f, ROTATION_SPEED = 0.1f;
+	private static final float MOVE_SPEED = 0.5f, ROTATION_SPEED = 0.1f;
 	
 	public Camera() {
 		position = new Vector3f(0, 0, 0);
