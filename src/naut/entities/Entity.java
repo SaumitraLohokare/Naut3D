@@ -3,8 +3,11 @@ package naut.entities;
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
+import naut.core.Camera;
+import naut.lighting.DirectionalLight;
 import naut.materials.Material;
 import naut.models.Model;
+import naut.shaders.ShaderLoader;
 import naut.textures.Texture;
 
 public class Entity {
@@ -13,6 +16,7 @@ public class Entity {
 	private float scale;
 	private Model model;
 	private Material material;
+	private String shaderType;
 	
 	public Entity (Vector3f position, Vector3f rotation, float scale) {
 		this.position = position;
@@ -26,6 +30,12 @@ public class Entity {
 	
 	public void setMaterial(Material material) {
 		this.material = material;
+		if (this.material.hasTexture()) {
+			shaderType = "textured";
+		} else {
+			shaderType = "static";
+		}
+//		shaderType = "textured";
 	}
 
 	public Vector3f getPosition() {
@@ -47,6 +57,16 @@ public class Entity {
 		return matrix;
 	}
 	
+	public void render(DirectionalLight light, Camera c) {
+		var shader = ShaderLoader.shaders.get(shaderType);
+		if (shader == null) 
+			throw new IllegalStateException("Invalid shader " + shaderType);
+		
+		shader.start(getTransformationMatrix(), material, light, c);
+		shader.renderEntity(this);
+		shader.stop();
+	}
+	
 	public Model model() {
 		return model;
 	}
@@ -61,5 +81,10 @@ public class Entity {
 
 	public Material getMaterial() {
 		return material;
+	}
+
+	public void setPosition(Vector3f direction) {
+		position = direction;
+		
 	}
 }

@@ -6,6 +6,7 @@ import naut.core.GameLogic;
 import naut.core.Input;
 import naut.core.RenderManager;
 import naut.core.WindowManager;
+import naut.shaders.ShaderLoader;
 
 public class Launcher {
 	
@@ -26,6 +27,8 @@ public class Launcher {
 		window = new WindowManager(1280, 720, "Naut Engine");
 		renderer = new RenderManager();
 		game = new GameLogic();
+		
+		ShaderLoader.init();
 	}
 	
 	private void run() {
@@ -54,6 +57,7 @@ public class Launcher {
 	
 	private void cleanUp() {
 		window.cleanUp();
+		ShaderLoader.cleanUp();
 	}
 	
 	public static WindowManager getWindow() {

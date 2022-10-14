@@ -11,8 +11,6 @@ import org.lwjgl.glfw.GLFWCursorPosCallback;
 
 public class Input {
 	
-	private static final float MOUSE_SENSITIVITY = 1f;
-	
 	private static Vector2d lastMousePos = new Vector2d(-1, -1), currMousePos = new Vector2d(0, 0);
 	private static Vector2f displVec = new Vector2f();
 	private static boolean inWindow = false, leftButtonPressed = false, rightButtonPressed = false;
@@ -51,9 +49,9 @@ public class Input {
 			var rotateX = x != 0;
 			var rotateY = y != 0;
 			if (rotateX)
-				displVec.y = (float)x * MOUSE_SENSITIVITY;
+				displVec.y = (float)x * Constants.MOUSE_SENSITIVITY;
 			if (rotateY)
-				displVec.x = (float)y * MOUSE_SENSITIVITY;
+				displVec.x = (float)y * Constants.MOUSE_SENSITIVITY;
 		}
 		lastMousePos.x = currMousePos.x;
 		lastMousePos.y = currMousePos.y;

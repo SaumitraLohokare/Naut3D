@@ -13,7 +13,9 @@ import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
 import org.lwjgl.system.MemoryStack;
 
+import naut.core.Camera;
 import naut.entities.Entity;
+import naut.lighting.DirectionalLight;
 import naut.materials.Material;
 
 public abstract class Shader {
@@ -46,6 +48,12 @@ public abstract class Shader {
 		uniforms.put(name, location);
 	}
 	
+	public void createDirectionalLightUniform(String name) {
+		createUniform(name + ".color");
+		createUniform(name + ".direction");
+		createUniform(name + ".intensity");
+	}
+	
 	public void createMaterialUniform(String name) {
 		createUniform(name + ".ambient");
 		createUniform(name + ".diffuse");
@@ -67,15 +75,17 @@ public abstract class Shader {
 	}
 	
 	public void setUniform(String name, Vector3f value) {
-		try (var stack = MemoryStack.stackPush()) {
-			GL20.glUniform4fv(uniforms.get(name), value.get(stack.mallocFloat(3)));
-		}
+		GL20.glUniform3f(uniforms.get(name), value.x, value.y, value.z);
 	}
 	
 	public void setUniform(String name, Vector4f value) {
-		try (var stack = MemoryStack.stackPush()) {
-			GL20.glUniform4fv(uniforms.get(name), value.get(stack.mallocFloat(4)));
-		}
+		GL20.glUniform4f(uniforms.get(name), value.x, value.y, value.z, value.w);
+	}
+	
+	public void setUniform(String name, DirectionalLight light) {
+		setUniform(name + ".color", light.getColor());
+		setUniform(name + ".direction", light.getDirection());
+		setUniform(name + ".intensity", light.getIntensity());
 	}
 	
 	public void setUniform(String name, Material material) {
@@ -92,7 +102,7 @@ public abstract class Shader {
 		}
 	}
 	
-	protected void start(){
+	public void start(Matrix4f t, Material m, DirectionalLight light, Camera c){
 		GL20.glUseProgram(programID);
 	}
 	

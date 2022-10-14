@@ -15,6 +15,9 @@ struct Material {
 };
 
 uniform vec3 ambientLight;
+uniform vec3 lightDirection;
+uniform vec3 cameraPosition;
+uniform float specularPower;
 uniform Material material;
 
 vec4 ambientC;
@@ -27,9 +30,36 @@ void setupColors(Material material) {
 	specularC = material.specular;
 }
 
+float cellRound(float factor) {
+	return round(factor * 2) / 2;
+}
+
+vec3 calculateDiffuse(vec3 light_dir) {
+	float diffuseFactor = max(dot(fragNormal, light_dir), 0.0);
+	
+	// Cell shading: 
+	// (x * 3) / 3 --> gives us more rings for cell shading
+	// somewhere between 2 & 3 is a good number 
+	// diffuseFactor = cellRound(diffuseFactor * 3) / 3;
+	return ambientLight * diffuseFactor;
+}
+
+vec3 calculateSpecular(vec3 light_dir) {
+	vec3 cameraDirection = normalize(cameraPosition - fragNormal);
+	vec3 reflectDirection = normalize(reflect(-light_dir, fragNormal));
+	float specularFactor = pow(max(dot(cameraDirection, reflectDirection), 0.0), material.reflectance);
+	
+	return specularPower * specularFactor * ambientLight;
+}
+
 void main(void) {
 	setupColors(material);
 	
-	// ambientC = material.ambient * material.specular * material.diffuse;
-	out_color = ambientC * vec4(ambientLight, 1.0);
+	vec3 normalizedLightDirection = normalize(lightDirection);
+	
+	vec4 diffuseColor = vec4(calculateDiffuse(normalizedLightDirection), 1);
+	vec4 specularColor = vec4(calculateSpecular(normalizedLightDirection), 1);
+	vec4 overallColor = vec4(ambientLight, 1) + diffuseColor + specularColor;
+	
+	out_color = overallColor * ambientC;
 }

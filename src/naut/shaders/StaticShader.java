@@ -8,10 +8,12 @@ import static org.lwjgl.opengl.GL20.glEnableVertexAttribArray;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 
 import main.Launcher;
+import naut.core.Camera;
+import naut.core.Constants;
 import naut.entities.Entity;
+import naut.lighting.DirectionalLight;
 import naut.materials.Material;
 import naut.scenes.Scene;
 
@@ -20,8 +22,6 @@ public class StaticShader extends Shader {
 	private static final String VS = "src/shaderfiles/static.vs";
 	private static final String FS = "src/shaderfiles/static.fs";
 	
-	private static final Vector3f AMBIENT_LIGHT = new Vector3f(1f, 1f, 1f);
-	
 	public StaticShader() {
 		super(VS, FS);
 		
@@ -29,18 +29,25 @@ public class StaticShader extends Shader {
 		createUniform("viewMatrix");
 		createUniform("projectionMatrix");
 		createUniform("ambientLight");
+		createUniform("lightDirection");
+		createUniform("cameraPosition");
+		createUniform("specularPower");
 		createMaterialUniform("material");
 	}
 	
-	public void start(Matrix4f t, Material material) {
-		super.start();
+	@Override
+	public void start(Matrix4f t, Material material, DirectionalLight light, Camera c) {
+		super.start(t, material, light, c);
 		
 		// setup uniforms
 		setUniform("projectionMatrix", Launcher.getWindow().getProjectionMatrix());
 		setUniform("viewMatrix", Scene.currentScene().getCameraViewMatrix());
 		setUniform("transformationMatrix", t);
 		
-		setUniform("ambientLight", AMBIENT_LIGHT);
+		setUniform("ambientLight", Constants.AMBIENT_LIGHT);
+		setUniform("lightDirection", light.getDirection());
+		setUniform("cameraPosition", c.getPosition());
+		setUniform("specularPower", Constants.SPECULAR_POWER);
 		setUniform("material", material);
 	}
 
